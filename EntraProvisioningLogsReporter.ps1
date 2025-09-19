@@ -144,6 +144,7 @@ for ($i = 0; $i -lt $logObj.Count; $i++)
         $updateHT = [System.Collections.Hashtable]::new(200)
         $updateHT.Add("id", $logObj[$i]['id'])
         $updateHT.Add("activityDateTime", $logObj[$i]['activityDateTime'].Replace('T', ' ').Replace('Z',''))
+		$updateHT.Add("durationInMilliseconds", $logObj[$i]['durationInMilliseconds'])
         $updateHT.Add("tenantId", $logObj[$i]['tenantId'])
         $updateHT.Add("jobId", $logObj[$i]['jobId'])
         $updateHT.Add("cycleId", $logObj[$i]['cycleId'])
@@ -291,6 +292,7 @@ $dynamicColumns | where { $_.Contains("provisioningStatusInfo") -or $_.Contains(
 $totalColumns = [ordered]@{
     id = $null
     activityDateTime = $null
+    durationInMilliseconds = $null
     tenantId = $null
     jobId = $null
     cycleId = $null
@@ -344,4 +346,5 @@ else
 {
     "Elapsed Time : " + $ElapsedTime.Hours + "Hours " + $ElapsedTime.Minutes + " Minutes " + $ElapsedTime.Seconds + " Seconds" | Write-Host
 }
+
 [System.GC]::Collect()
