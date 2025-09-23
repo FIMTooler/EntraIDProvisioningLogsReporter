@@ -143,7 +143,14 @@ for ($i = 0; $i -lt $logObj.Count; $i++)
         # prep hashTable with known fields on all objects
         $updateHT = [System.Collections.Hashtable]::new(200)
         $updateHT.Add("id", $logObj[$i]['id'])
-        $updateHT.Add("activityDateTime", $logObj[$i]['activityDateTime'].Replace('T', ' ').Replace('Z',''))
+		if ($logObj[$i]['activityDateTime'] -is [DateTime])
+		{
+			$updateHT.Add("activityDateTime", $logObj[$i]['activityDateTime'].ToString("u"))
+		}
+		else
+		{
+        	$updateHT.Add("activityDateTime", $logObj[$i]['activityDateTime'].Replace('T', ' ').Replace('Z',''))
+		}
 		$updateHT.Add("durationInMilliseconds", $logObj[$i]['durationInMilliseconds'])
         $updateHT.Add("tenantId", $logObj[$i]['tenantId'])
         $updateHT.Add("jobId", $logObj[$i]['jobId'])
@@ -348,3 +355,4 @@ else
 }
 
 [System.GC]::Collect()
+
