@@ -214,8 +214,14 @@ for ($i = 0; $i -lt $logObj.Count; $i++)
         }
 
         # add modified properties
+		# Entra always logs accountDisabled with a null oldValue, whether or not the value actually changed, so it is ignored when deciding whether this entry represents a real change
+		$realChange = $false
         foreach ($property in $logObj[$i]['modifiedProperties'])
         {
+			if ($property['displayName'] -notin "accountDisabled")
+			{
+				$realChange = $true
+			}
             $targetValue = $null
             # If old value is null, use target value from provisioning steps. Else leave null so oldValue will be used
             if ($null -eq $property['oldValue'])
@@ -262,6 +268,8 @@ for ($i = 0; $i -lt $logObj.Count; $i++)
                 $updateHT.Add("$($property['displayName'])_updatedValue", $property['newValue'])
             }
         }
+		# records with no modifiedProperties, or only accountDisabled, report no real change
+		$updateHT.Add("changesExcludingAccountDisabled", $realChange)
     }
     catch
     {
@@ -323,6 +331,9 @@ foreach ($key in $totalFailedColumns | sort)
 {
     try{$totalColumns.Add($key, $null)}catch{ $Error.RemoveAt(0) }
 }
+
+# change indicator sits immediately before the old\updated columns
+$totalColumns.Add("changesExcludingAccountDisabled", $null)
 
 # ensure old\updated columns are always on far right of CSV by adding to end of columns
 foreach ($key in $totalOldNewColumns | sort)
