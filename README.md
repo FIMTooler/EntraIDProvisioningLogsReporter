@@ -63,7 +63,16 @@ NOTE: The values in these columns are the existing values in the Source/Target s
 | TargetIdentity_FirstName | FirstName is the attribute name from the Target system |
 
 ## Change Columns
-Columns used to represent changes in the Target system made by an Entra connector. Each attribute that is changed will have a pair of corresponding columns identifying old and new attribute values. Columns indicating the previous value are suffixed with "_oldValue". Columns indicating the updated value are suffixed with "_newValue".
+
+### changesExcludingAccountDisabled
+Indicates whether a record represents a meaningful change to the Target system. The value is TRUE when the record modifies at least one attribute other than "accountDisabled", and FALSE otherwise, including when the record modifies no attributes at all.
+
+Entra logs "accountDisabled" on a record whether or not the value actually changed, and always writes its previous value as null. Records that push only "accountDisabled" therefore appear as updates — provisioningAction will read "update" and a pair of change columns will be present — even though nothing meaningful changed in the Target system. Filtering on changesExcludingAccountDisabled = TRUE removes this noise.
+
+This column appears in every report, regardless of the switches used, and is positioned immediately before the "_oldValue"/"_updatedValue" columns.
+
+### Attribute Value Columns
+Columns used to represent changes in the Target system made by an Entra connector. Each attribute that is changed will have a pair of corresponding columns identifying old and new attribute values. Columns indicating the previous value are suffixed with "_oldValue". Columns indicating the updated value are suffixed with "_updatedValue".
 
 NOTE: To identify where a new value is null, a value of "(Null)" is used.
 
@@ -74,7 +83,7 @@ NOTE: To identify where a new value is whitespace or empty string, a value of "(
 | Column Name | Description |
 | --- | --- |
 | FirstName_oldValue | Original value of FirstName attribute in the Target system |
-| FirstName_newValue | Updated value of FirstName attribute in the Target system |
+| FirstName_updatedValue | Updated value of FirstName attribute in the Target system |
 
 # Script Versions
 
